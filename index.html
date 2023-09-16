@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX</title>
+</head>
+<body>
+    
+    <button id="prev" onclick="loadFunction('prev')"> Previous </button>
+    <button id="next" onclick="loadFunction('next')"> Next </button>
+    <div id="jsonContent"></div>
+
+    <script>
+       
+       let currentPage=0;
+
+       function loadFunction (direction) {
+            const jsonContent= document.getElementById("jsonContent");
+
+            if (direction === 'prev' && currentPage > 1) {
+                currentPage--;
+            } else if (direction === 'next') {
+                currentPage++;
+            }
+
+            const url = `https://reqres.in/api/users?page=${currentPage}`;
+            const xhr = new XMLHttpRequest();
+            
+            xhr.open("GET",url, true);
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState===4 && xhr.status===200){
+
+                    const jsonData= JSON.parse(xhr.responseText);
+                   
+                    const users= jsonData.data;
+                    let parsedData='';
+
+                    for (let i=0; i<users.length; i++) {
+                        const user = users[i];
+                        const email= user.email;
+                        const firstName= user.first_name;
+                        const lastName= user.last_name;
+                        const avatar= user.avatar;
+
+                        parsedData += `
+                        <div>
+                            <p>Email: ${email}</p>
+                            <p>First Name: ${firstName}</p>
+                            <p>Last Name: ${lastName}</p>
+                            <img src="${avatar}" alt="Avatar">
+                        </div>
+                      `;
+                    }
+                    jsonContent.innerHTML= parsedData;
+
+                    }
+                    else {
+                        jsonContent.innerHTML = "Failed to load";
+                    }
+                    
+                
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
